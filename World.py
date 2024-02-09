@@ -1,5 +1,4 @@
 import csv
-
 import pygame
 import os
 
@@ -40,7 +39,7 @@ class World:
                     elif tile >= 11 and tile <= 14:
                         pass
                     elif tile == 15:
-                        player = Character((x * 40), (y * 40), (1.65), "player")
+                        player = Character((x * 40), (y * 40), (1.65),3, "player")
                     else:
                         pass
         return player
@@ -48,3 +47,5 @@ class World:
     def draw(self,screen):
         for obstacle in self.obstacles:
             screen.blit(obstacle[0], obstacle[1])
+    def draw_bg(self,screen):
+        screen.fill((255,255,255))
