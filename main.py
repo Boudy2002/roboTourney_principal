@@ -24,7 +24,9 @@ while run:
     player.draw(screen)
 
     if player.alive:
-        if moving_left or moving_right:
+        if player.in_air:
+            player.update_action(2)
+        elif moving_left or moving_right:
             player.update_action(1)  # 1: run
         else:
             player.update_action(0)  # 0: idle
@@ -38,6 +40,8 @@ while run:
                 moving_left = True
             elif event.key == pygame.K_d:
                 moving_right = True
+            if event.key == pygame.K_w and player.alive:
+                player.jump = True
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_a:
                 moving_left = False

@@ -4,6 +4,7 @@ import pygame
 class Character(pygame.sprite.Sprite):
     def __init__(self,x,y,scale,speed,type):
         pygame.sprite.Sprite.__init__(self)
+        self.in_air = True
         self.type= type
         self.speed = speed
         self.direction = 1
@@ -12,6 +13,8 @@ class Character(pygame.sprite.Sprite):
         self.index = 0
         self.action = 0
         self.alive = True
+        self.jump = False
+        self.y = 0
         self.time = pygame.time.get_ticks()
         animation_types = ['Idle','Run','Jump','Death']
         for animation in animation_types:
@@ -37,10 +40,11 @@ class Character(pygame.sprite.Sprite):
     def update_action(self,action):
         if action != self.action:
             self.action = action
-            self.frame_index = 0
-            self.update_time = pygame.time.get_ticks()
+            self.index = 0
+            self.time = pygame.time.get_ticks()
 
     def move(self,moving_right,moving_left):
+        y = 0
         if moving_right:
             self.rect.x += self.speed
             self.flip = False
@@ -49,5 +53,20 @@ class Character(pygame.sprite.Sprite):
             self.rect.x -= self.speed
             self.flip = True
             self.direction = -1
+
+        if self.jump == True and self.in_air == False:
+            self.y = -11
+            self.jump = False
+            self.in_air = True
+        y+= self.y
+        self.y += 0.75
+
+        y += self.y
+
+        # check collision with floor
+        if self.rect.bottom + y > 440:
+            y = 440 - self.rect.bottom
+            self.in_air = False
+        self.rect.y += y
     def draw(self,screen):
         screen.blit(pygame.transform.flip(self.image,self.flip,False), self.rect)
