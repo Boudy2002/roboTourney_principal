@@ -40,6 +40,8 @@ class World:
                         pass
                     elif tile == 15:
                         player = Character((x * 40), (y * 40), (1.65),3, "player")
+                    #elif tile == 16:
+                    #    player = Character((x * 40), (y*40), (1.65),3, "enemy")
                     else:
                         pass
         return player

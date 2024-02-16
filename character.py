@@ -1,6 +1,9 @@
 import os
 import pygame
 
+from Bullet import Bullet
+
+
 class Character(pygame.sprite.Sprite):
     def __init__(self,x,y,scale,speed,type):
         pygame.sprite.Sprite.__init__(self)
@@ -15,19 +18,19 @@ class Character(pygame.sprite.Sprite):
         self.alive = True
         self.jump = False
         self.y = 0
+        self.shooting = False
         self.time = pygame.time.get_ticks()
         animation_types = ['Idle','Run','Jump','Death']
         for animation in animation_types:
             temp=[]
             for i in range(len(os.listdir(f'Assets/{type}/{animation}'))):
-                img = pygame.image.load(f'Assets/{type}/{animation}/{i}.png')
+                img = pygame.image.load(f'Assets/{type}/{animation}/{i}.png').convert_alpha()
                 img = pygame.transform.scale(img, (int(img.get_width() * scale), int(img.get_height() * scale)))
                 temp.append(img)
             self.animation_list.append(temp)
         self.image = self.animation_list[self.action][self.index]
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
-
     def update_animation(self):
         ANIMATION_COOLDOWN = 100
         self.image = self.animation_list[self.action][self.index]
@@ -68,5 +71,12 @@ class Character(pygame.sprite.Sprite):
             y = 440 - self.rect.bottom
             self.in_air = False
         self.rect.y += y
+
+    def shoot(self,bullets):
+        _bullet = Bullet((self.rect.centerx + (self.rect.size[0] * 0.6 * self.direction)), self.rect.centery,
+                        self.direction)
+        bullets.add(_bullet)
+        return bullets
+
     def draw(self,screen):
         screen.blit(pygame.transform.flip(self.image,self.flip,False), self.rect)
