@@ -1,6 +1,8 @@
 import pygame
 
+from HealthBar import HealthBar
 from World import World
+from character import Character
 
 pygame.init()
 
@@ -8,11 +10,15 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = (SCREEN_WIDTH * 0.8)
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Protector")
+font = pygame.font.SysFont('Futura', 30)
 timer = pygame.time.Clock()
 FPS = 60
 world = World()
-PLAYER = world.process_data()
 bullets = pygame.sprite.Group()
+enemies = pygame.sprite.Group()
+boxes = pygame.sprite.Group()
+PLAYER, enemies,boxes = world.process_data(enemies,boxes)
+health_bar = HealthBar(10,10,PLAYER.health,PLAYER.max_health)
 run = True
 screen.fill((255, 255, 255))
 moving_left = False
@@ -21,10 +27,17 @@ while run:
     timer.tick(FPS)
     world.draw_bg(screen)
     world.draw(screen)
-    PLAYER.update_animation()
+    PLAYER.update()
     PLAYER.draw(screen)
-    bullets.update()
+    for enemy in enemies:
+        enemy.update()
+        enemy.draw(screen)
+        bullets.update(PLAYER, enemy, bullets)
     bullets.draw(screen)
+    boxes.update(PLAYER)
+    boxes.draw(screen)
+    screen.blit(font.render(f"Ammo: {PLAYER.ammo}", True, (255,0,0)), (10, 35))
+    health_bar.draw(PLAYER.health,screen)
     if PLAYER.alive:
         if PLAYER.shooting:
             bullets = PLAYER.shoot(bullets)

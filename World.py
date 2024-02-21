@@ -2,6 +2,7 @@ import csv
 import pygame
 import os
 
+from ItemBox import ItemBox
 from character import Character
 
 
@@ -23,7 +24,7 @@ class World:
                 for y, tile in enumerate(row):
                     self.world_data[x][y] = int(tile)
 
-    def process_data(self):
+    def process_data(self,enemies,boxes):
         for y, row in enumerate(self.world_data):
             for x, tile in enumerate(row):
                 if tile >= 0:
@@ -39,15 +40,23 @@ class World:
                     elif tile >= 11 and tile <= 14:
                         pass
                     elif tile == 15:
-                        player = Character((x * 40), (y * 40), (1.65),3, "player")
-                    #elif tile == 16:
-                    #    player = Character((x * 40), (y*40), (1.65),3, "enemy")
+                        player = Character((x * 40), (y * 40), 1.65, 3, "player", 20)
+                    elif tile == 16:
+                        enemy = Character((x * 40), (y * 40), 1.65, 3, "enemy", 20)
+                        enemies.add(enemy)
+                    elif tile == 17:
+                        ammo_box = ItemBox('ammo', x * 40, y * 40)
+                        boxes.add(ammo_box)
+                    elif tile == 19:
+                        health_box = ItemBox('health', x * 40, y * 40)
+                        boxes.add(health_box)
                     else:
                         pass
-        return player
+        return player, enemies, boxes
 
-    def draw(self,screen):
+    def draw(self, screen):
         for obstacle in self.obstacles:
             screen.blit(obstacle[0], obstacle[1])
-    def draw_bg(self,screen):
-        screen.fill((255,255,255))
+
+    def draw_bg(self, screen):
+        screen.fill((255, 255, 255))

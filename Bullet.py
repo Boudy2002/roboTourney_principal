@@ -10,7 +10,15 @@ class Bullet(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
 
-    def update(self):
+    def update(self, player, enemy, bullets):
         self.rect.x += self.direction * self.speed
         if self.rect.right < 0 or self.rect.left > 800:
             self.kill()
+        if pygame.sprite.spritecollide(player, bullets, False):
+            if player.alive:
+                player.health -= 5
+                self.kill()
+        if pygame.sprite.spritecollide(enemy, bullets, False):
+            if enemy.alive:
+                enemy.health -= 25
+                self.kill()
