@@ -66,9 +66,11 @@ class World:
                         ground = Ground(img, x * 40, y * 40)
                         grounds.add(ground)
                     elif tile == 15:
-                        player = Character((x * 40), (y * 40), 1.65, 3, "player", 20)
+                        player = Character((x * 40), (y * 40), 1.65, 4, "player", 20)
+                        player.set_obstacles(self.obstacles)
                     elif tile == 16:
                         enemy = Character((x * 40), (y * 40), 1.65, 2, "enemy", 20)
+                        enemy.set_obstacles(self.obstacles)
                         enemies.add(enemy)
                     elif tile == 17:
                         ammo_box = ItemBox('ammo', x * 40, y * 40)

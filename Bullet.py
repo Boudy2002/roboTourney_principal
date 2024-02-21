@@ -9,11 +9,15 @@ class Bullet(pygame.sprite.Sprite):
         self.image = pygame.image.load("Assets/icons/bullet.png").convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
+        self.obstacles = []
 
     def update(self, player, enemy, bullets):
         self.rect.x += self.direction * self.speed
         if self.rect.right < 0 or self.rect.left > 800:
             self.kill()
+        for tile in self.obstacles:
+            if tile[1].colliderect(self.rect):
+                self.kill()
         if pygame.sprite.spritecollide(player, bullets, False):
             if player.alive:
                 player.health -= 5

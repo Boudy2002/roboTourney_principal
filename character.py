@@ -4,8 +4,6 @@ import random
 import pygame
 
 from Bullet import Bullet
-
-
 class Character(pygame.sprite.Sprite):
     def __init__(self, x, y, scale, speed, type, ammo):
         pygame.sprite.Sprite.__init__(self)
@@ -37,11 +35,16 @@ class Character(pygame.sprite.Sprite):
         self.image = self.animation_list[self.action][self.index]
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
+        self.width = self.image.get_width()
+        self.height = self.image.get_height()
         self.move_counter = 0
         self.idle = False
         self.idle_counter = 0
         self.sight = pygame.Rect(0, 0, 150, 20)
+        self.obstacles = []
 
+    def set_obstacles(self,obstacle):
+        self.obstacles = obstacle
     def update_animation(self):
         ANIMATION_COOLDOWN = 100
         self.image = self.animation_list[self.action][self.index]
@@ -61,30 +64,37 @@ class Character(pygame.sprite.Sprite):
             self.time = pygame.time.get_ticks()
 
     def move(self, moving_right, moving_left):
-        y = 0
-        if moving_right:
-            self.rect.x += self.speed
-            self.flip = False
-            self.direction = 1
-        elif moving_left:
-            self.rect.x -= self.speed
+        dx = 0
+        dy = 0
+        if moving_left:
+            dx = -self.speed
             self.flip = True
             self.direction = -1
-
+        if moving_right:
+            dx = self.speed
+            self.flip = False
+            self.direction = 1
         if self.jump == True and self.in_air == False:
             self.y = -11
             self.jump = False
             self.in_air = True
-        y += self.y
         self.y += 0.75
-
-        y += self.y
-
-        # check collision with floor
-        if self.rect.bottom + y > 440:
-            y = 440 - self.rect.bottom
-            self.in_air = False
-        self.rect.y += y
+        if self.y > 10:
+            self.y
+        dy += self.y
+        for tile in self.obstacles:
+            if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
+                dx = 0
+            if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
+                if self.y < 0:
+                    self.y = 0
+                    dy = tile[1].bottom - self.rect.top
+                elif self.y >= 0:
+                    self.y = 0
+                    self.in_air = False
+                    dy = tile[1].top - self.rect.bottom
+        self.rect.x += dx
+        self.rect.y += dy
 
     def shoot(self, bullets):
         if self.SHOOTING_COOLDOWN == 0 and self.ammo > 0:
@@ -92,6 +102,7 @@ class Character(pygame.sprite.Sprite):
             self.SHOOTING_COOLDOWN = 20
             _bullet = Bullet((self.rect.centerx + (self.rect.size[0] * 0.6 * self.direction)), self.rect.centery,
                              self.direction)
+            _bullet.obstacles = self.obstacles
             bullets.add(_bullet)
         return bullets
 
