@@ -1,4 +1,6 @@
 import os
+import random
+
 import pygame
 
 from Bullet import Bullet
@@ -35,6 +37,10 @@ class Character(pygame.sprite.Sprite):
         self.image = self.animation_list[self.action][self.index]
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
+        self.move_counter = 0
+        self.idle = False
+        self.idle_counter = 0
+        self.sight = pygame.Rect(0, 0, 150, 20)
 
     def update_animation(self):
         ANIMATION_COOLDOWN = 100
@@ -104,3 +110,32 @@ class Character(pygame.sprite.Sprite):
             self.speed = 0
             self.alive = False
             self.update_action(3)
+
+    def attack(self, player, bullets):
+        if self.alive and player.alive:
+            if random.randint(1, 200) == 1 and self.idle == False:
+                self.update_action(0)
+                self.idle = True
+                self.idle_counter = 50
+            if self.sight.colliderect(player.rect):
+                self.update_action(0)
+                self.shoot(bullets)
+            else:
+                if self.idle == False:
+                    if self.direction == 1:
+                        enemy_moving_right = True
+                    else:
+                        enemy_moving_right = False
+                    enemy_moving_left = not enemy_moving_right
+                    self.move(enemy_moving_right, enemy_moving_left)
+                    self.update_action(1)
+                    self.move_counter += 1
+                    self.sight.center = (self.rect.centerx + 75 * self.direction, self.rect.centery)
+
+                    if self.move_counter > 40:
+                        self.direction *= -1
+                        self.move_counter *= -1
+                else:
+                    self.idle_counter -= 1
+                    if self.idle_counter <= 0:
+                        self.idle = False

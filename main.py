@@ -17,8 +17,10 @@ world = World()
 bullets = pygame.sprite.Group()
 enemies = pygame.sprite.Group()
 boxes = pygame.sprite.Group()
-PLAYER, enemies,boxes = world.process_data(enemies,boxes)
-health_bar = HealthBar(10,10,PLAYER.health,PLAYER.max_health)
+grounds = pygame.sprite.Group()
+waters = pygame.sprite.Group()
+PLAYER, enemies, boxes, grounds, waters = world.process_data(enemies, boxes, grounds, waters)
+health_bar = HealthBar(10, 10, PLAYER.health, PLAYER.max_health)
 run = True
 screen.fill((255, 255, 255))
 moving_left = False
@@ -30,23 +32,26 @@ while run:
     PLAYER.update()
     PLAYER.draw(screen)
     for enemy in enemies:
+        enemy.attack(PLAYER, bullets)
         enemy.update()
         enemy.draw(screen)
         bullets.update(PLAYER, enemy, bullets)
     bullets.draw(screen)
     boxes.update(PLAYER)
     boxes.draw(screen)
-    screen.blit(font.render(f"Ammo: {PLAYER.ammo}", True, (255,0,0)), (10, 35))
-    health_bar.draw(PLAYER.health,screen)
+    grounds.draw(screen)
+    waters.draw(screen)
+    screen.blit(font.render(f"Ammo: {PLAYER.ammo}", True, (255, 0, 0)), (10, 35))
+    health_bar.draw(PLAYER.health, screen)
     if PLAYER.alive:
         if PLAYER.shooting:
             bullets = PLAYER.shoot(bullets)
         if PLAYER.in_air:
             PLAYER.update_action(2)
         elif moving_left or moving_right:
-            PLAYER.update_action(1)  # 1: run
+            PLAYER.update_action(1)
         else:
-            PLAYER.update_action(0)  # 0: idle
+            PLAYER.update_action(0)
         PLAYER.move(moving_right, moving_left)
 
     for event in pygame.event.get():

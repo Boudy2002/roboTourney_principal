@@ -6,6 +6,30 @@ from ItemBox import ItemBox
 from character import Character
 
 
+class Ground(pygame.sprite.Sprite):
+    def __init__(self, img, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = img
+        self.rect = self.image.get_rect()
+        self.rect.midtop = (x + 40 // 2, y + (40 - self.image.get_height()))
+
+
+class Water(pygame.sprite.Sprite):
+    def __init__(self, img, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = img
+        self.rect = self.image.get_rect()
+        self.rect.midtop = (x + 40 // 2, y + (40 - self.image.get_height()))
+
+
+class Exit(pygame.sprite.Sprite):
+    def __init__(self, img, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = img
+        self.rect = self.image.get_rect()
+        self.rect.midtop = (x + 40 // 2, y + (40 - self.image.get_height()))
+
+
 class World:
     def __init__(self):
         self.obstacles = []
@@ -24,7 +48,7 @@ class World:
                 for y, tile in enumerate(row):
                     self.world_data[x][y] = int(tile)
 
-    def process_data(self,enemies,boxes):
+    def process_data(self, enemies, boxes, grounds, waters):
         for y, row in enumerate(self.world_data):
             for x, tile in enumerate(row):
                 if tile >= 0:
@@ -36,13 +60,15 @@ class World:
                     if tile >= 0 and tile <= 8:
                         self.obstacles.append(tile_data)
                     elif tile >= 9 and tile <= 10:
-                        pass
+                        water = Water(img, x * 40, y * 40)
+                        waters.add(water)
                     elif tile >= 11 and tile <= 14:
-                        pass
+                        ground = Ground(img, x * 40, y * 40)
+                        grounds.add(ground)
                     elif tile == 15:
                         player = Character((x * 40), (y * 40), 1.65, 3, "player", 20)
                     elif tile == 16:
-                        enemy = Character((x * 40), (y * 40), 1.65, 3, "enemy", 20)
+                        enemy = Character((x * 40), (y * 40), 1.65, 2, "enemy", 20)
                         enemies.add(enemy)
                     elif tile == 17:
                         ammo_box = ItemBox('ammo', x * 40, y * 40)
@@ -52,7 +78,7 @@ class World:
                         boxes.add(health_box)
                     else:
                         pass
-        return player, enemies, boxes
+        return player, enemies, boxes, grounds, waters
 
     def draw(self, screen):
         for obstacle in self.obstacles:
