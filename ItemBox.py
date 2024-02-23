@@ -9,7 +9,8 @@ class ItemBox(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.midtop = (x + 40 // 2, y + (40 - self.image.get_height()))
 
-    def update(self, player):
+    def update(self, player,rate_scroll):
+        self.rect.x += rate_scroll
         if pygame.sprite.collide_rect(self, player):
             if self.item_type == 'health':
                 player.health += 25

@@ -64,6 +64,7 @@ class Character(pygame.sprite.Sprite):
             self.time = pygame.time.get_ticks()
 
     def move(self, moving_right, moving_left):
+        rate_scroll = 0
         dx = 0
         dy = 0
         if moving_left:
@@ -75,7 +76,7 @@ class Character(pygame.sprite.Sprite):
             self.flip = False
             self.direction = 1
         if self.jump == True and self.in_air == False:
-            self.y = -11
+            self.y = -13
             self.jump = False
             self.in_air = True
         self.y += 0.75
@@ -95,6 +96,13 @@ class Character(pygame.sprite.Sprite):
                     dy = tile[1].top - self.rect.bottom
         self.rect.x += dx
         self.rect.y += dy
+        if self.type == "player":
+            if self.rect.right > 800 - 200 or self.rect.left < 800 - 200:
+                self.rect.x -= dx
+                rate_scroll = -dx
+
+        return rate_scroll
+
 
     def shoot(self, bullets):
         if self.SHOOTING_COOLDOWN == 0 and self.ammo > 0:
@@ -122,7 +130,7 @@ class Character(pygame.sprite.Sprite):
             self.alive = False
             self.update_action(3)
 
-    def attack(self, player, bullets):
+    def attack(self, player, bullets,rate_scroll):
         if self.alive and player.alive:
             if random.randint(1, 200) == 1 and self.idle == False:
                 self.update_action(0)
@@ -150,3 +158,4 @@ class Character(pygame.sprite.Sprite):
                     self.idle_counter -= 1
                     if self.idle_counter <= 0:
                         self.idle = False
+        self.rect.x += rate_scroll

@@ -19,28 +19,35 @@ enemies = pygame.sprite.Group()
 boxes = pygame.sprite.Group()
 grounds = pygame.sprite.Group()
 waters = pygame.sprite.Group()
-PLAYER, enemies, boxes, grounds, waters = world.process_data(enemies, boxes, grounds, waters)
+exits = pygame.sprite.Group()
+PLAYER, enemies, boxes, grounds, waters, exits = world.process_data(enemies, boxes, grounds, waters, exits)
 health_bar = HealthBar(10, 10, PLAYER.health, PLAYER.max_health)
 run = True
 screen.fill((255, 255, 255))
 moving_left = False
 moving_right = False
+rate_scroll = 0
+rate_loop = 0
 while run:
     timer.tick(FPS)
     world.draw_bg(screen)
-    world.draw(screen)
+    world.draw(screen,rate_scroll)
     PLAYER.update()
     PLAYER.draw(screen)
     for enemy in enemies:
-        enemy.attack(PLAYER, bullets)
+        enemy.attack(PLAYER, bullets,rate_scroll)
         enemy.update()
         enemy.draw(screen)
-        bullets.update(PLAYER, enemy, bullets)
+        bullets.update(PLAYER, enemy, bullets,rate_scroll)
     bullets.draw(screen)
-    boxes.update(PLAYER)
+    boxes.update(PLAYER,rate_scroll)
+    grounds.update(rate_scroll)
+    waters.update(rate_scroll)
+    exits.update(rate_scroll)
     boxes.draw(screen)
     grounds.draw(screen)
     waters.draw(screen)
+    exits.draw(screen)
     screen.blit(font.render(f"Ammo: {PLAYER.ammo}", True, (255, 0, 0)), (10, 35))
     health_bar.draw(PLAYER.health, screen)
     if PLAYER.alive:
@@ -52,8 +59,8 @@ while run:
             PLAYER.update_action(1)
         else:
             PLAYER.update_action(0)
-        PLAYER.move(moving_right, moving_left)
-
+        rate_scroll = PLAYER.move(moving_right, moving_left)
+        rate_loop -= rate_scroll
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False

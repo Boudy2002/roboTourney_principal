@@ -13,6 +13,9 @@ class Ground(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.midtop = (x + 40 // 2, y + (40 - self.image.get_height()))
 
+    def update(self,rate_scroll):
+        self.rect.x += rate_scroll
+
 
 class Water(pygame.sprite.Sprite):
     def __init__(self, img, x, y):
@@ -21,6 +24,8 @@ class Water(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.midtop = (x + 40 // 2, y + (40 - self.image.get_height()))
 
+    def update(self,rate_scroll):
+        self.rect.x += rate_scroll
 
 class Exit(pygame.sprite.Sprite):
     def __init__(self, img, x, y):
@@ -29,6 +34,8 @@ class Exit(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.midtop = (x + 40 // 2, y + (40 - self.image.get_height()))
 
+    def update(self,rate_scroll):
+        self.rect.x += rate_scroll
 
 class World:
     def __init__(self):
@@ -48,7 +55,7 @@ class World:
                 for y, tile in enumerate(row):
                     self.world_data[x][y] = int(tile)
 
-    def process_data(self, enemies, boxes, grounds, waters):
+    def process_data(self, enemies, boxes, grounds, waters,exits):
         for y, row in enumerate(self.world_data):
             for x, tile in enumerate(row):
                 if tile >= 0:
@@ -78,12 +85,16 @@ class World:
                     elif tile == 19:
                         health_box = ItemBox('health', x * 40, y * 40)
                         boxes.add(health_box)
+                    elif tile >= 20 and tile <= 21:
+                        exit = Exit(img, x * 40, y * 40)
+                        exits.add(exit)
                     else:
                         pass
-        return player, enemies, boxes, grounds, waters
+        return player, enemies, boxes, grounds, waters, exits
 
-    def draw(self, screen):
+    def draw(self, screen,rate):
         for obstacle in self.obstacles:
+            obstacle[1][0] += rate
             screen.blit(obstacle[0], obstacle[1])
 
     def draw_bg(self, screen):
