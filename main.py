@@ -115,6 +115,27 @@ def play():
 
         pygame.display.update()
 
+def game_over():
+    screen.fill((255, 255, 255))
+    PLAY_MOUSE_POS = pygame.mouse.get_pos()
+    MENU_TEXT = get_font(70).render("GAME OVER", True, "#000000")
+    MENU_RECT = MENU_TEXT.get_rect(center=(400, 110))
+    EASY_BUTTON = Button(image=pygame.image.load("Assets/Buttons/Play Rect.png"), pos=(400, 400),
+                         text_input="RESTART", font=get_font(50), base_color="#d7fcd4", hovering_color="White")
+    screen.blit(MENU_TEXT, MENU_RECT)
+    for button in [EASY_BUTTON]:
+        button.changeColor(PLAY_MOUSE_POS)
+        button.update(screen)
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if EASY_BUTTON.checkForInput(PLAY_MOUSE_POS):
+                play()
+
+    pygame.display.update()
 
 def level(difficulty):
     FPS = 60
@@ -167,6 +188,8 @@ def level(difficulty):
                 PLAYER.update_action(0)
             rate_scroll = PLAYER.move(moving_right, moving_left)
             rate_loop -= rate_scroll
+        else:
+            game_over()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
