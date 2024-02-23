@@ -6,7 +6,6 @@ from pygame import mixer
 from HealthBar import HealthBar
 from World import World
 from button import Button
-from character import Character
 
 pygame.init()
 SCREEN_WIDTH = 800
@@ -18,27 +17,27 @@ timer = pygame.time.Clock()
 mixer.pre_init(44100, -16, 2, 512)
 mixer.init()
 mixer.music.load("Assets/Music/music.wav")
-mixer.music.play(-1,0.0,500)
+mixer.music.play(-1, 0.0, 500)
+
 
 def get_font(size):
-    return pygame.font.Font("Assets/Fonts/font.ttf",size)
+    return pygame.font.Font("Assets/Fonts/font.ttf", size)
+
 
 def main():
     pygame.display.set_caption("The Protector")
     while True:
         screen.fill((255, 255, 255))
         MENU_MOUSE_POS = pygame.mouse.get_pos()
-        MENU_TEXT = get_font(50).render("MAIN MENU",True,"#000000")
-        MENU_RECT = MENU_TEXT.get_rect(center = (400,110))
+        MENU_TEXT = get_font(50).render("MAIN MENU", True, "#000000")
+        MENU_RECT = MENU_TEXT.get_rect(center=(400, 110))
         PLAY_BUTTON = Button(image=pygame.image.load("Assets/Buttons/Play Rect.png"), pos=(400, 250),
                              text_input="PLAY", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-        OPTIONS_BUTTON = Button(image=pygame.image.load("Assets/Buttons/Options Rect.png"), pos=(400, 400),
-                                text_input="OPTIONS", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-        QUIT_BUTTON = Button(image=pygame.image.load("Assets/Buttons/Quit Rect.png"), pos=(400, 550),
+        QUIT_BUTTON = Button(image=pygame.image.load("Assets/Buttons/Quit Rect.png"), pos=(400, 400),
                              text_input="QUIT", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
 
         screen.blit(MENU_TEXT, MENU_RECT)
-        for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
+        for button in [PLAY_BUTTON, QUIT_BUTTON]:
             button.changeColor(MENU_MOUSE_POS)
             button.update(screen)
 
@@ -48,14 +47,12 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
                     play()
-                if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    #settings_page()
-                    pass
                 if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     pygame.quit()
                     sys.exit()
 
         pygame.display.update()
+
 
 def pause():
     while True:
@@ -80,7 +77,46 @@ def pause():
 
         pygame.display.update()
 
+
 def play():
+    pygame.display.set_caption("choose difficulty")
+    while True:
+        screen.fill((255, 255, 255))
+        PLAY_MOUSE_POS = pygame.mouse.get_pos()
+        MENU_TEXT = get_font(40).render("CHOOSE DIFFICULTY", True, "#000000")
+        MENU_RECT = MENU_TEXT.get_rect(center=(400, 110))
+        EASY_BUTTON = Button(image=pygame.image.load("Assets/Buttons/Play Rect.png"), pos=(400, 250),
+                             text_input="EASY", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+        MEDIUM_BUTTON = Button(image=pygame.image.load("Assets/Buttons/Options Rect.png"), pos=(400, 400),
+                               text_input="MEDIUM", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+        HARD_BUTTON = Button(image=pygame.image.load("Assets/Buttons/Quit Rect.png"), pos=(400, 550),
+                             text_input="HARD", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+        BACK_BUTTON = Button(image=pygame.transform.scale(pygame.image.load("Assets/Buttons/Play Rect.png"), (50, 50)),
+                             pos=(60, 50),
+                             text_input="<", font=get_font(50), base_color="#d7fcd4", hovering_color="White")
+        screen.blit(MENU_TEXT, MENU_RECT)
+        for button in [EASY_BUTTON, MEDIUM_BUTTON, HARD_BUTTON, BACK_BUTTON]:
+            button.changeColor(PLAY_MOUSE_POS)
+            button.update(screen)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if EASY_BUTTON.checkForInput(PLAY_MOUSE_POS):
+                    level(3)
+                if MEDIUM_BUTTON.checkForInput(PLAY_MOUSE_POS):
+                    level(2)
+                if HARD_BUTTON.checkForInput(PLAY_MOUSE_POS):
+                    level(1)
+                if BACK_BUTTON.checkForInput(PLAY_MOUSE_POS):
+                    main()
+
+        pygame.display.update()
+
+
+def level(difficulty):
     FPS = 60
     world = World()
     bullets = pygame.sprite.Group()
@@ -97,19 +133,20 @@ def play():
     moving_right = False
     rate_scroll = 0
     rate_loop = 0
+    PLAYER.ammo = difficulty * 10
     while run:
         timer.tick(FPS)
         world.draw_bg(screen)
-        world.draw(screen,rate_scroll)
+        world.draw(screen, rate_scroll)
         PLAYER.update()
         PLAYER.draw(screen)
         for enemy in enemies:
-            enemy.attack(PLAYER, bullets,rate_scroll)
+            enemy.attack(PLAYER, bullets, rate_scroll)
             enemy.update()
             enemy.draw(screen)
-            bullets.update(PLAYER, enemy, bullets,rate_scroll)
+            bullets.update(PLAYER, enemy, bullets, rate_scroll)
         bullets.draw(screen)
-        boxes.update(PLAYER,rate_scroll)
+        boxes.update(PLAYER, rate_scroll)
         grounds.update(rate_scroll)
         waters.update(rate_scroll)
         exits.update(rate_scroll)
@@ -153,6 +190,7 @@ def play():
                     PLAYER.shooting = False
 
         pygame.display.update()
+
 
 if __name__ == "__main__":
     main()
