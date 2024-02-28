@@ -5,7 +5,7 @@ class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, direction):
         pygame.sprite.Sprite.__init__(self)
         self.direction = direction
-        self.speed = 4
+        self.speed = 5
         self.image = pygame.image.load("Assets/icons/bullet.png").convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
@@ -24,5 +24,5 @@ class Bullet(pygame.sprite.Sprite):
                 self.kill()
         if pygame.sprite.spritecollide(enemy, bullets, False):
             if enemy.alive:
-                enemy.health -= 25
+                enemy.health -= 20
                 self.kill()
