@@ -193,7 +193,7 @@ def level(difficulty,level_count):
     moving_right = False
     rate_scroll = 0
     rate_loop = 0
-    PLAYER.ammo = difficulty * 30
+    PLAYER.ammo = difficulty * 10
     while run:
         timer.tick(FPS)
         world.draw_bg(screen)
