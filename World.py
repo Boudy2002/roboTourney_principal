@@ -1,7 +1,5 @@
 import csv
-
 import pygame
-
 from ItemBox import ItemBox
 from character import Character
 

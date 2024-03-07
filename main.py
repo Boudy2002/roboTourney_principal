@@ -4,6 +4,7 @@ from pygame import mixer
 from HealthBar import HealthBar
 from World import World
 from button import Button
+
 pygame.init()
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = (SCREEN_WIDTH * 0.8)
@@ -16,6 +17,8 @@ mixer.init()
 mixer.music.load("Assets/Music/music.wav")
 mixer.music.play(-1, 0.0, 500)
 level_count = 0
+
+
 def get_font(size):
     return pygame.font.Font("Assets/Fonts/font.ttf", size)
 
@@ -99,15 +102,16 @@ def play(level_count):
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if EASY_BUTTON.checkForInput(PLAY_MOUSE_POS):
-                    level(3,level_count)
+                    level(3, level_count)
                 if MEDIUM_BUTTON.checkForInput(PLAY_MOUSE_POS):
-                    level(2,level_count)
+                    level(2, level_count)
                 if HARD_BUTTON.checkForInput(PLAY_MOUSE_POS):
-                    level(1,level_count)
+                    level(1, level_count)
                 if BACK_BUTTON.checkForInput(PLAY_MOUSE_POS):
                     main()
 
         pygame.display.update()
+
 
 def game_over():
     screen.fill((255, 255, 255))
@@ -130,6 +134,7 @@ def game_over():
                 play(level_count)
 
     pygame.display.update()
+
 
 def win(level_count):
     if level_count < 2:
@@ -170,12 +175,13 @@ def win(level_count):
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if EASY_BUTTON.checkForInput(PLAY_MOUSE_POS):
-                    level_count = 0
-                    play(level_count)
+                    pygame.quit()
+                    sys.exit()
 
         pygame.display.update()
 
-def level(difficulty,level_count):
+
+def level(difficulty, level_count):
     pygame.display.set_caption(f"Level {level_count}")
     FPS = 60
     world = World(level_count)
@@ -188,7 +194,6 @@ def level(difficulty,level_count):
     PLAYER, enemies, boxes, grounds, waters, exits = world.process_data(enemies, boxes, grounds, waters, exits)
     health_bar = HealthBar(10, 10, PLAYER.health, PLAYER.max_health)
     run = True
-    screen.fill((255, 255, 255))
     moving_left = False
     moving_right = False
     rate_scroll = 0
@@ -214,13 +219,13 @@ def level(difficulty,level_count):
         grounds.draw(screen)
         waters.draw(screen)
         exits.draw(screen)
-        screen.blit(font.render(f"Ammo: {PLAYER.ammo}", True, (255, 0, 0)), (10, 35))
+        screen.blit(font.render(f"Ammo: {PLAYER.ammo}", True, (255, 255, 255)), (10, 35))
         health_bar.draw(PLAYER.health, screen)
-        if pygame.sprite.spritecollide(PLAYER,exits,False):
+        if pygame.sprite.spritecollide(PLAYER, exits, False):
             win(world.level)
-            moving_left=False
-            moving_right=False
-        if pygame.sprite.spritecollide(PLAYER,waters,False):
+            moving_left = False
+            moving_right = False
+        if pygame.sprite.spritecollide(PLAYER, waters, False):
             PLAYER.health = 0
             PLAYER.alive = False
         if PLAYER.rect.y > SCREEN_HEIGHT:

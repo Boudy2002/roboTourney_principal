@@ -4,6 +4,8 @@ import random
 import pygame
 
 from Bullet import Bullet
+
+
 class Character(pygame.sprite.Sprite):
     def __init__(self, x, y, scale, speed, type, ammo):
         pygame.sprite.Sprite.__init__(self)
@@ -43,8 +45,9 @@ class Character(pygame.sprite.Sprite):
         self.sight = pygame.Rect(0, 0, 150, 20)
         self.obstacles = []
 
-    def set_obstacles(self,obstacle):
+    def set_obstacles(self, obstacle):
         self.obstacles = obstacle
+
     def update_animation(self):
         ANIMATION_COOLDOWN = 100
         self.image = self.animation_list[self.action][self.index]
@@ -103,7 +106,6 @@ class Character(pygame.sprite.Sprite):
 
         return rate_scroll
 
-
     def shoot(self, bullets):
         if self.SHOOTING_COOLDOWN == 0 and self.ammo > 0:
             self.ammo -= 1
@@ -130,7 +132,7 @@ class Character(pygame.sprite.Sprite):
             self.alive = False
             self.update_action(3)
 
-    def attack(self, player, bullets,rate_scroll):
+    def attack(self, player, bullets, rate_scroll):
         if self.alive and player.alive:
             if random.randint(1, 200) == 1 and self.idle == False:
                 self.update_action(0)
